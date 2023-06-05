@@ -9,6 +9,7 @@ The MultiPDF Chat App is a Python application that allows you to chat with multi
 ## How It Works
 
 ---
+
 ![image](https://github.com/MdAamirShuaib/LLM-PDF-Chat/assets/84447928/6037fcff-f5f8-41a7-9f16-142afb1cb52e)
 
 The application follows these steps to provide responses to your questions:
@@ -37,7 +38,7 @@ To install the MultiPDF Chat App, please follow these steps:
    pip install -r requirements.txt
    ```
 
-3. Obtain an API key from OpenAI and add it to the `.env` file in the project directory.
+3. Obtain an API key from OpenAI or HuggingFace.
 
 ## Usage
 
@@ -47,7 +48,7 @@ To use the MultiPDF Chat App, follow these steps:
 
 1. Ensure that you have installed the required dependencies and added the OpenAI API key to the `.env` file.
 
-2. Run the `main.py` file using the Streamlit CLI. Execute the following command:
+2. Run the `app.py` file using the Streamlit CLI. Execute the following command:
 
    ```
    streamlit run app.py
