@@ -28,19 +28,19 @@ def getTextChunks(rawText):
     return textChunks
 
 
-def getVectorStore(textChunks, selectedLLM):
+def getVectorStore(textChunks, selectedLLM, apiKey):
     if selectedLLM == "OpenAI":
-        embeddings = OpenAIEmbeddings()
+        embeddings = OpenAIEmbeddings(openai_api_key=apiKey)
     elif selectedLLM == "HuggingFace":
         embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     vectorStore = FAISS.from_texts(texts=textChunks, embedding=embeddings)
     return vectorStore
 
 
-def getConversationChain(vectorStore, selectedLLM):
+def getConversationChain(vectorStore, selectedLLM, apiKey):
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     if selectedLLM == "OpenAI":
-        llm = ChatOpenAI()
+        llm = ChatOpenAI(openai_api_key=apiKey)
     elif selectedLLM == "HuggingFace":
         llm = HuggingFaceHub(
             repo_id="google/flan-t5-xxl",
@@ -75,9 +75,6 @@ def handleUserInput(userQuestion):
 
 def main():
     apiConfiguration = False
-    if not apiConfiguration:
-        os.environ["OPENAI_API_KEY"] = ""
-        os.environ["HUGGINGFACEHUB_API_TOKEN"] = ""
     st.set_page_config(page_title="PDF Chatbot", page_icon=":books:")
 
     st.write(css, unsafe_allow_html=True)
@@ -131,9 +128,9 @@ def main():
                 with st.spinner("Processing your documents"):
                     rawText = getPdfText(pdfDocs)
                     textChunks = getTextChunks(rawText)
-                    vectorStore = getVectorStore(textChunks, selectedLLM)
+                    vectorStore = getVectorStore(textChunks, selectedLLM, apiKey)
                     st.session_state.conversation = getConversationChain(
-                        vectorStore, selectedLLM
+                        vectorStore, selectedLLM, apiKey
                     )
                 st.write("Documents Processed")
     st.markdown(footer, unsafe_allow_html=True)
