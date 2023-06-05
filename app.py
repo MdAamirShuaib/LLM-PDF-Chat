@@ -31,8 +31,8 @@ def getTextChunks(rawText):
 
 
 def getVectorStore(textChunks, selectedLLM, apiKey):
-    if selectedLLM == "OpenAI":
-        embeddings = OpenAIEmbeddings(openai_api_key=apiKey)
+    # if selectedLLM == "OpenAI":
+    embeddings = OpenAIEmbeddings(openai_api_key=apiKey)
     # elif selectedLLM == "HuggingFace":
     #     embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     vectorStore = FAISS.from_texts(texts=textChunks, embedding=embeddings)
