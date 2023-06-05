@@ -45,6 +45,7 @@ def getConversationChain(vectorStore, selectedLLM, apiKey):
         llm = HuggingFaceHub(
             repo_id="google/flan-t5-xxl",
             model_kwargs={"temperature": 0.5, "max_length": 512},
+            huggingfacehub_api_token=apiKey,
         )
     chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
