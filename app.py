@@ -107,7 +107,7 @@ def main():
             selectedLLM = "OpenAI"
             if selectedLLM == "OpenAI":
                 apiKey = st.text_input(
-                    label="Enter your OpenAI API key", type="password"
+                    label="OpenAI API key", type="password", placeholder="Enter API Key"
                 )
                 setKey = st.button("Set API key")
                 if setKey:
