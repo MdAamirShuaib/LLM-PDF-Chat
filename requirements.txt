@@ -6,8 +6,8 @@ openai
 faiss-cpu
 tiktoken
 # # uncomment to use huggingface llms
-# huggingface-hub
+huggingface-hub
 
 # # uncomment to use instructor embeddings
-# InstructorEmbedding
-# sentence-transformers
+InstructorEmbedding
+sentence-transformers
