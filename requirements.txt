@@ -5,9 +5,8 @@ streamlit
 openai
 faiss-cpu
 tiktoken
-# # uncomment to use huggingface llms
-# huggingface-hub
 
-# # uncomment to use instructor embeddings
+# # uncomment to use huggingface llms and instructor embeddings
+# huggingface-hub
 # InstructorEmbedding
 # sentence-transformers
