@@ -7,7 +7,7 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from htmlTemplates import css, bot_template, user_template
+from htmlTemplates import css, bot_template, user_template, footer
 from langchain.llms import HuggingFaceHub
 
 
@@ -75,6 +75,9 @@ def handleUserInput(userQuestion):
 
 def main():
     apiConfiguration = False
+    if not apiConfiguration:
+        os.environ["OPENAI_API_KEY"] = ""
+        os.environ["HUGGINGFACEHUB_API_TOKEN"] = ""
     st.set_page_config(page_title="PDF Chatbot", page_icon=":books:")
 
     st.write(css, unsafe_allow_html=True)
@@ -133,6 +136,7 @@ def main():
                         vectorStore, selectedLLM
                     )
                 st.write("Documents Processed")
+    st.markdown(footer, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
