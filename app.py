@@ -7,7 +7,7 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from htmlTemplates import css, bot_template, user_template, footer
+from htmlTemplates import css, bot_template, user_template, footer, completed
 
 # from langchain.llms import HuggingFaceHub
 # from langchain.embeddings import HuggingFaceInstructEmbeddings
@@ -77,7 +77,6 @@ def handleUserInput(userQuestion):
 
 
 def main():
-    apiConfiguration = False
     st.set_page_config(page_title="PDF Chatbot", page_icon=":books:")
 
     st.write(css, unsafe_allow_html=True)
@@ -94,51 +93,59 @@ def main():
         handleUserInput(userQuestion)
 
     with st.sidebar:
-        if not apiConfiguration:
-            st.header("API Configuration")
-            # Removing the functionality for Hugging face as the free cloud platform doesnt have enough compute
+        st.header("API Configuration")
+        # Removing the functionality for Hugging face as the free cloud platform doesnt have enough compute
 
-            # options = ["Select a LLM", "OpenAI", "HuggingFace"]
-            # default_option = "Select a LLM"
+        # options = ["Select a LLM", "OpenAI", "HuggingFace"]
+        # default_option = "Select a LLM"
 
-            # selectedLLM = st.selectbox(
-            #     "Choose a LLM", options, index=options.index(default_option)
-            # )
-            selectedLLM = "OpenAI"
-            if selectedLLM == "OpenAI":
-                apiKey = st.text_input(
-                    label="OpenAI API key", type="password", placeholder="Enter API Key"
-                )
+        # selectedLLM = st.selectbox(
+        #     "Choose a LLM", options, index=options.index(default_option)
+        # )
+        selectedLLM = "OpenAI"
+        if selectedLLM == "OpenAI":
+            apiKey = st.text_input(
+                label="OpenAI API key", type="password", placeholder="Enter API Key"
+            )
+            col1, col2 = st.columns(2)
+            with col1:
                 setKey = st.button("Set API key")
+            with col2:
                 if setKey:
                     os.environ["OPENAI_API_KEY"] = apiKey
-                    apiConfiguration = True
-                    st.write("API key set")
-
-            # if selectedLLM == "HuggingFace":
-            #     apiKey = st.text_input(
-            #         label="HuggingFace API key (Free but Slow)", type="password"
-            #     )
-            #     setKey = st.button("Set API key")
-            #     if setKey:
-            #         os.environ["HUGGINGFACEHUB_API_TOKEN"] = apiKey
-            #         apiConfiguration = True
-            #         st.write("API key set")
-            st.subheader("Your Documents")
-            pdfDocs = st.file_uploader(
-                "Upload your PDFs abd click on Process",
-                type=["pdf"],
-                accept_multiple_files=True,
-            )
-            if st.button("Process"):
-                with st.spinner("Processing your documents"):
-                    rawText = getPdfText(pdfDocs)
-                    textChunks = getTextChunks(rawText)
-                    vectorStore = getVectorStore(textChunks, selectedLLM, apiKey)
-                    st.session_state.conversation = getConversationChain(
-                        vectorStore, selectedLLM, apiKey
+                    st.write(
+                        completed.replace("{{text}}", "API key set"),
+                        unsafe_allow_html=True,
                     )
-                st.write("Documents Processed")
+
+        # if selectedLLM == "HuggingFace":
+        #     apiKey = st.text_input(
+        #         label="HuggingFace API key (Free but Slow)", type="password"
+        #     )
+        #     setKey = st.button("Set API key")
+        #     if setKey:
+        #         os.environ["HUGGINGFACEHUB_API_TOKEN"] = apiKey
+        #         st.write("API key set")
+
+        st.subheader("Your Documents")
+        pdfDocs = st.file_uploader(
+            "Upload your PDFs abd click on Process",
+            type=["pdf"],
+            accept_multiple_files=True,
+        )
+
+        if st.button("Process"):
+            with st.spinner("Processing your documents"):
+                rawText = getPdfText(pdfDocs)
+                textChunks = getTextChunks(rawText)
+                vectorStore = getVectorStore(textChunks, selectedLLM, apiKey)
+                st.session_state.conversation = getConversationChain(
+                    vectorStore, selectedLLM, apiKey
+                )
+            st.write(
+                completed.replace("{{text}}", "Documents Processed"),
+                unsafe_allow_html=True,
+            )
     st.markdown(footer, unsafe_allow_html=True)
 
 

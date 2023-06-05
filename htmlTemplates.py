@@ -53,3 +53,7 @@ footer = """
     <p>Made by Mohammed Aamir Shuaib</p>
 </div>
 """
+
+completed = """
+<div style="display:flex; align-items:center;"><span style="color:green">\u2713 {{text}}</span></div>
+"""
