@@ -2,13 +2,15 @@ import streamlit as st
 import os
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template, footer
-from langchain.llms import HuggingFaceHub
+
+# from langchain.llms import HuggingFaceHub
+# from langchain.embeddings import HuggingFaceInstructEmbeddings
 
 
 def getPdfText(pdfDocs):
@@ -31,8 +33,8 @@ def getTextChunks(rawText):
 def getVectorStore(textChunks, selectedLLM, apiKey):
     if selectedLLM == "OpenAI":
         embeddings = OpenAIEmbeddings(openai_api_key=apiKey)
-    elif selectedLLM == "HuggingFace":
-        embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
+    # elif selectedLLM == "HuggingFace":
+    #     embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     vectorStore = FAISS.from_texts(texts=textChunks, embedding=embeddings)
     return vectorStore
 
@@ -41,12 +43,12 @@ def getConversationChain(vectorStore, selectedLLM, apiKey):
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     if selectedLLM == "OpenAI":
         llm = ChatOpenAI(openai_api_key=apiKey)
-    elif selectedLLM == "HuggingFace":
-        llm = HuggingFaceHub(
-            repo_id="google/flan-t5-xxl",
-            model_kwargs={"temperature": 0.5, "max_length": 512},
-            huggingfacehub_api_token=apiKey,
-        )
+    # elif selectedLLM == "HuggingFace":
+    #     llm = HuggingFaceHub(
+    #         repo_id="google/flan-t5-xxl",
+    #         model_kwargs={"temperature": 0.5, "max_length": 512},
+    #         huggingfacehub_api_token=apiKey,
+    #     )
     chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorStore.as_retriever(),
@@ -94,12 +96,15 @@ def main():
     with st.sidebar:
         if not apiConfiguration:
             st.header("API Configuration")
-            options = ["Select a LLM", "OpenAI", "HuggingFace"]
-            default_option = "Select a LLM"
+            # Removing the functionality for Hugging face as the free cloud platform doesnt have enough compute
 
-            selectedLLM = st.selectbox(
-                "Choose a LLM", options, index=options.index(default_option)
-            )
+            # options = ["Select a LLM", "OpenAI", "HuggingFace"]
+            # default_option = "Select a LLM"
+
+            # selectedLLM = st.selectbox(
+            #     "Choose a LLM", options, index=options.index(default_option)
+            # )
+            selectedLLM = "OpenAI"
             if selectedLLM == "OpenAI":
                 apiKey = st.text_input(
                     label="Enter your OpenAI API key (Paid and Fast)", type="password"
@@ -110,15 +115,15 @@ def main():
                     apiConfiguration = True
                     st.write("API key set")
 
-            if selectedLLM == "HuggingFace":
-                apiKey = st.text_input(
-                    label="HuggingFace API key (Free but Slow)", type="password"
-                )
-                setKey = st.button("Set API key")
-                if setKey:
-                    os.environ["HUGGINGFACEHUB_API_TOKEN"] = apiKey
-                    apiConfiguration = True
-                    st.write("API key set")
+            # if selectedLLM == "HuggingFace":
+            #     apiKey = st.text_input(
+            #         label="HuggingFace API key (Free but Slow)", type="password"
+            #     )
+            #     setKey = st.button("Set API key")
+            #     if setKey:
+            #         os.environ["HUGGINGFACEHUB_API_TOKEN"] = apiKey
+            #         apiConfiguration = True
+            #         st.write("API key set")
             st.subheader("Your Documents")
             pdfDocs = st.file_uploader(
                 "Upload your PDFs abd click on Process",
